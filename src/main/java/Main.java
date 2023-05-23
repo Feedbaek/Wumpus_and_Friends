@@ -1,5 +1,11 @@
+import NeulSung.*;
+
+import javax.swing.*;
+
 public class Main {
+
+    private JPanel jPanel;
     public static void main(String[] args) {
-        System.out.println("hello world22222222222222222222!");
+        Map map = new Map();
     }
 }
