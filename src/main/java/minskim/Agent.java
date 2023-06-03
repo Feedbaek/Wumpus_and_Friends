@@ -1,20 +1,40 @@
 package minskim;
 
 public class Agent {
+    private boolean alive = false;
     private int arrow = 0;
+    private boolean haveGold = false;
     private LookDirection direction = LookDirection.EAST;
     private int locRow = 0;
     private int locCol = 0;
 
     public Agent() {
+        alive = true;
         arrow = 2;
+        haveGold = false;
         direction = LookDirection.EAST;
         locRow = 1;
         locCol = 1;
     }
 
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
     public int getArrow() {
         return arrow;
+    }
+
+    public boolean isHaveGold() {
+        return haveGold;
+    }
+
+    public void setHaveGold(boolean haveGold) {
+        this.haveGold = haveGold;
     }
 
     public LookDirection getDirection() {
@@ -41,7 +61,7 @@ public class Agent {
         this.locCol = locCol;
     }
 
-    public void GoForward(State state) {
+    public void GoForward() {
         // 바라보는 방향으로 이동
         if (direction == LookDirection.NORTH) {
             locRow += 1;
@@ -52,30 +72,8 @@ public class Agent {
         } else if (direction == LookDirection.EAST) {
             locCol += 1;
         }
-
-        // 벽에 부딫혔는지 검사
-        if (locRow < 0 || locRow > 8 || locCol < 0 || locCol > 8) {
-            state.setBump(true);
-            if (locRow < 0) {
-                locRow = 0;
-            } else if (locRow > 8) {
-                locRow = 8;
-            } else if (locCol < 0) {
-                locCol = 0;
-            } else if (locCol > 8) {
-                locCol = 8;
-            }
-            return ;
-        }
-
-        // Wumpus 검사
-
-        // Pitch 검사
-
-        // gold 검사
-        System.out.println();
     }
-    public void TurnLeft(State state) {
+    public void TurnLeft() {
         if (direction == LookDirection.NORTH) {
             direction = LookDirection.WEST;
         } else if (direction == LookDirection.SOUTH) {
@@ -86,7 +84,7 @@ public class Agent {
             direction = LookDirection.NORTH;
         }
     }
-    public void TurnRight(State state) {
+    public void TurnRight() {
         if (direction == LookDirection.NORTH) {
             direction = LookDirection.EAST;
         } else if (direction == LookDirection.SOUTH) {
@@ -97,13 +95,17 @@ public class Agent {
             direction = LookDirection.SOUTH;
         }
     }
-    public void Grab(State state) {
-
+    public void Grab() {
+        haveGold = true;
     }
-    public void Shoot(State state) {
-
+    public boolean Shoot() {
+        if (arrow == 0) {
+            return false;
+        }
+        arrow -= 1;
+        return true;
     }
     public void Climb(State state) {
-
+        System.out.println("탈출 성공!!!");
     }
 }
