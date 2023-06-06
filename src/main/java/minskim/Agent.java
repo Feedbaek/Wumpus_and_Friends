@@ -1,5 +1,7 @@
 package minskim;
 
+import minskim.enums.LookDirection;
+
 public class Agent {
     private boolean alive = false;
     private int arrow = 0;
