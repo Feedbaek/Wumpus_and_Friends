@@ -1,10 +1,7 @@
-import NeulSung.*;
-
-import javax.swing.*;
+import neulSung.*;
 
 public class Main {
 
-    private JPanel jPanel;
     public static void main(String[] args) {
         Map map = new Map();
     }
