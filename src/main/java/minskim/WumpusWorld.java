@@ -14,7 +14,7 @@ public class WumpusWorld {
 
     public WumpusWorld() {
         mapInit();
-        sensor = new Sensor(worldMap);
+        sensor = new Sensor();
     }
 
     // method
@@ -51,8 +51,8 @@ public class WumpusWorld {
         }
     }
 
-    private State percept() {
-        State state = new State();
+    private State Percept(Agent agent) {
+        State state = sensor.percept(agent, worldMap);
         return state;
     }
 

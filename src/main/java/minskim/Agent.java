@@ -1,18 +1,23 @@
 package minskim;
 
 import minskim.enums.LookDirection;
+import minskim.enums.NextAction;
+import minskim.enums.WumpusObject;
 
 public class Agent {
     private boolean alive = false;
     private int arrow = 0;
+    private boolean hitted = false;
     private boolean haveGold = false;
     private LookDirection direction = LookDirection.EAST;
+    private LookDirection prevDirection = LookDirection.EAST;
     private int locRow = 0;
     private int locCol = 0;
 
     public Agent() {
         alive = true;
         arrow = 2;
+        hitted = false;
         haveGold = false;
         direction = LookDirection.EAST;
         locRow = 1;
@@ -31,6 +36,14 @@ public class Agent {
         return arrow;
     }
 
+    public boolean isHitted() {
+        return hitted;
+    }
+
+    public void setHitted(boolean hitted) {
+        this.hitted = hitted;
+    }
+
     public boolean isHaveGold() {
         return haveGold;
     }
@@ -45,6 +58,14 @@ public class Agent {
 
     public void setDirection(LookDirection direction) {
         this.direction = direction;
+    }
+
+    public LookDirection getPrevDirection() {
+        return prevDirection;
+    }
+
+    public void setPrevDirection(LookDirection prevDirection) {
+        this.prevDirection = prevDirection;
     }
 
     public int getLocRow() {
@@ -74,6 +95,7 @@ public class Agent {
         } else if (direction == LookDirection.EAST) {
             locCol += 1;
         }
+        prevDirection = direction;
     }
     public void TurnLeft() {
         if (direction == LookDirection.NORTH) {
@@ -100,11 +122,30 @@ public class Agent {
     public void Grab() {
         haveGold = true;
     }
-    public boolean Shoot() {
+    public boolean Shoot(WumpusObject[][] worldMap) {
         if (arrow == 0) {
             return false;
         }
         arrow -= 1;
+        if (direction == LookDirection.NORTH 
+                && worldMap[locRow + 1][locCol] == WumpusObject.WUMPUS) {
+            hitted = true;
+            worldMap[locRow - 1][locCol] = WumpusObject.EMPTY;
+        } else if (direction == LookDirection.WEST
+                && worldMap[locRow][locCol - 1] == WumpusObject.WUMPUS) {
+            hitted = true;
+            worldMap[locRow][locCol - 1] = WumpusObject.EMPTY;
+
+        } else if (direction == LookDirection.SOUTH
+                && worldMap[locRow - 1][locCol] == WumpusObject.WUMPUS) {
+            hitted = true;
+            worldMap[locRow - 1][locCol] = WumpusObject.EMPTY;
+
+        } else if (direction == LookDirection.EAST
+                && worldMap[locRow][locCol + 1] == WumpusObject.WUMPUS) {
+            hitted = true;
+            worldMap[locRow][locCol + 1] = WumpusObject.EMPTY;
+        }
         return true;
     }
     public void Climb(State state) {
