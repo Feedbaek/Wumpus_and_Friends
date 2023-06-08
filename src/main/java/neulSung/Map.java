@@ -6,11 +6,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Enumeration;
 import java.util.Vector;
 
 public class
 Map extends JFrame {
+    /*--SWING COMPONENTS--*/
     private JPanel backPanel;
     private JPanel sidePanel;
     private JTable mapTable;
@@ -22,12 +22,16 @@ Map extends JFrame {
     private DefaultTableCellRenderer render;
     private DefaultTableModel perceptsModel;
     private DefaultTableCellRenderer perceptsRender;
+    /*--SWING COMPONENTS-end--*/
+
 
     private Object[][] data;
-    Object[] columnVector;
+    private Object[] columnVector;
 
     private Object[][] curPercepts;
-    Object[] perceptsCol;
+    private Object[] perceptsCol;
+
+    private boolean[][] discovered;
 
     // Images
     private Icon wumpus;
@@ -43,7 +47,9 @@ Map extends JFrame {
     static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Gold(Glittering)_temp.png";
 
     int cur_row=0;
+    int cur_row2=0;
     int stack=0;
+    int stack2=0;
     int numOfArrows;
 
     public Map(){
@@ -63,6 +69,15 @@ Map extends JFrame {
         }
         data[0][0]=State.SAFE;
 
+        /*--Discovered Init--*/
+        discovered = new boolean[4][4];
+        for(int i=0;i<4;i++){
+            for(int j=0;j<4;j++){
+                discovered[i][j]=false;
+            }
+        }
+        discovered[0][0]=true;
+
         /*--# of Arrows--*/
         numOfArrows=2;
         arrowsLabel.setText(String.valueOf(numOfArrows));
@@ -76,6 +91,7 @@ Map extends JFrame {
                 if(c==3) stack++;
                 if(stack==4) stack=0;
                 if(c==0) cur_row=stack;
+                if(!discovered[cur_row][c]) return String.class;
                 return getValueAt(cur_row,c).getClass();
             }
         };
@@ -111,7 +127,10 @@ Map extends JFrame {
         perceptsModel = new DefaultTableModel(perceptsCol,2){
             @Override
             public Class getColumnClass(int c){
-                return getValueAt(0,c).getClass();
+                if(c==1) stack2++;
+                if(stack2==3) stack2=0;
+                if(c==0) cur_row2=stack2;
+                return getValueAt(cur_row2,c).getClass();
             }
         };
         perceptsModel.setDataVector(curPercepts,perceptsCol);
@@ -142,6 +161,7 @@ Map extends JFrame {
     //=========Interface========================
 
     public void setSafe(int row,int column){
+        discovered[row][column]=true;
         data[row][column]=State.SAFE;
         model.setDataVector(data,columnVector);
     }
@@ -170,7 +190,14 @@ Map extends JFrame {
         perceptsModel.setDataVector(curPercepts,perceptsCol);
     }
 
-    public Object[][] clear2DimensionArray(Object[][] array){
+    public void setDiscovered(int row, int column){
+        discovered[row][column]=true;
+    }
+    //=========Interface-end=====================
+
+
+    //=========Util==============================
+    private Object[][] clear2DimensionArray(Object[][] array){
         int col = array[0].length;
         int row = array.length;
         int i,j;
@@ -189,18 +216,18 @@ Map extends JFrame {
         else if(state.equals(State.GLITTER)) return glitter;
         else return state;
     }
-
-
-    //=========Interface-end=====================
+    //=========Util-end==========================
 
     class MyTableCellRender extends DefaultTableCellRenderer{
+
+
 
         private static final long serialVersionUID = 1L;
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             try {
-                 if (data[row][column].equals(State.SAFE)){
+                 if (data[row][column].equals(State.SAFE) && discovered[row][column]){
                      cell.setBackground(new Color(143, 255, 78, 183));
                      cell.setForeground(new Color(143, 255, 78, 183));
                  }
