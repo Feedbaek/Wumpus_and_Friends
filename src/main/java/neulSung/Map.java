@@ -39,12 +39,22 @@ Map extends JFrame {
     private Icon stench;
     private Icon breeze;
     private Icon glitter;
+    private Icon[] agent;
 
     static final private String WUMPUS_LOC = "src/main/java/neulSung/Icons/Wumpus_temp.png";
     static final private String PITCH_LOC = "src/main/java/neulSung/Icons/Pitch_temp.png";
     static final private String STENCH_LOC = "src/main/java/neulSung/Icons/Stench_temp.png";
     static final private String BREEZE_LOC = "src/main/java/neulSung/Icons/Breeze_temp.png";
     static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Gold(Glittering)_temp.png";
+    static final private String AGENT_UP_LOC = "src/main/java/neulSung/Icons/Agents/Agent_up.png";
+    static final private String AGENT_DOWN_LOC = "src/main/java/neulSung/Icons/Agents/Agent_down.png";
+    static final private String AGENT_RIGHT_LOC = "src/main/java/neulSung/Icons/Agents/Agent_right.png";
+    static final private String AGENT_LEFT_LOC = "src/main/java/neulSung/Icons/Agents/Agent_left.png";
+
+    static final private int UP = 0;
+    static final private int DOWN = 1;
+    static final private int RIGHT = 2;
+    static final private int LEFT = 3;
 
     int cur_row=0;
     int cur_row2=0;
@@ -59,6 +69,14 @@ Map extends JFrame {
         stench = new ImageIcon(STENCH_LOC);
         breeze = new ImageIcon(BREEZE_LOC);
         glitter = new ImageIcon(GLITTER_LOC);
+        //agent
+        agent = new ImageIcon[4];
+        agent[UP]=new ImageIcon(AGENT_UP_LOC);
+        agent[RIGHT]=new ImageIcon(AGENT_RIGHT_LOC);
+        agent[LEFT]=new ImageIcon(AGENT_LEFT_LOC);
+        agent[DOWN]=new ImageIcon(AGENT_DOWN_LOC);
+
+
 
         /*--Data Init--*/
         data = new Object[4][4];
@@ -68,6 +86,7 @@ Map extends JFrame {
             }
         }
         data[0][0]=State.SAFE;
+        data[0][1]=agent[LEFT];
 
         /*--Discovered Init--*/
         discovered = new boolean[4][4];
@@ -77,6 +96,7 @@ Map extends JFrame {
             }
         }
         discovered[0][0]=true;
+        discovered[0][1]=true;
 
         /*--# of Arrows--*/
         numOfArrows=2;
@@ -192,6 +212,14 @@ Map extends JFrame {
 
     public void setDiscovered(int row, int column){
         discovered[row][column]=true;
+    }
+
+    public void useArrow(){
+        if(numOfArrows<=0)
+            numOfArrows=0;
+        else
+            numOfArrows--;
+        arrowsLabel.setText(String.valueOf(numOfArrows));
     }
     //=========Interface-end=====================
 
