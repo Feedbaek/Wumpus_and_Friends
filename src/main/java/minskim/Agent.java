@@ -4,11 +4,18 @@ import minskim.enums.LookDirection;
 import minskim.enums.NextAction;
 import minskim.enums.WumpusObject;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class Agent {
     private boolean alive = false;
     private int arrow = 0;
-    private boolean hitted = false;
+    private boolean shooted = false;
     private boolean haveGold = false;
+    private int[] targetCell = null;
+    private ArrayList<int[]> nextCell = null;
+    private Queue<NextAction> nextActions = null;
     private LookDirection direction = LookDirection.EAST;
     private LookDirection prevDirection = LookDirection.EAST;
     private int locRow = 0;
@@ -17,9 +24,13 @@ public class Agent {
     public Agent() {
         alive = true;
         arrow = 2;
-        hitted = false;
+        shooted = false;
         haveGold = false;
+        targetCell = new int[2];
+        nextCell = new ArrayList<>();
+        nextActions = new LinkedList<>();
         direction = LookDirection.EAST;
+        prevDirection = LookDirection.EAST;
         locRow = 1;
         locCol = 1;
     }
@@ -36,12 +47,12 @@ public class Agent {
         return arrow;
     }
 
-    public boolean isHitted() {
-        return hitted;
+    public boolean isShooted() {
+        return shooted;
     }
 
-    public void setHitted(boolean hitted) {
-        this.hitted = hitted;
+    public void setShooted(boolean shooted) {
+        this.shooted = shooted;
     }
 
     public boolean isHaveGold() {
@@ -50,6 +61,26 @@ public class Agent {
 
     public void setHaveGold(boolean haveGold) {
         this.haveGold = haveGold;
+    }
+
+    public int[] getTargetCell() {
+        return targetCell;
+    }
+
+    public void setTargetCell(int[] targetCell) {
+        this.targetCell = targetCell;
+    }
+
+    public ArrayList<int[]> getNextCell() {
+        return nextCell;
+    }
+
+    public Queue<NextAction> getNextActions() {
+        return nextActions;
+    }
+
+    public void setNextActions(Queue<NextAction> nextActions) {
+        this.nextActions = nextActions;
     }
 
     public LookDirection getDirection() {
@@ -122,33 +153,12 @@ public class Agent {
     public void Grab() {
         haveGold = true;
     }
-    public boolean Shoot(WumpusObject[][] worldMap) {
-        if (arrow == 0) {
-            return false;
-        }
+    public boolean Shoot() {
         arrow -= 1;
-        if (direction == LookDirection.NORTH 
-                && worldMap[locRow + 1][locCol] == WumpusObject.WUMPUS) {
-            hitted = true;
-            worldMap[locRow - 1][locCol] = WumpusObject.EMPTY;
-        } else if (direction == LookDirection.WEST
-                && worldMap[locRow][locCol - 1] == WumpusObject.WUMPUS) {
-            hitted = true;
-            worldMap[locRow][locCol - 1] = WumpusObject.EMPTY;
-
-        } else if (direction == LookDirection.SOUTH
-                && worldMap[locRow - 1][locCol] == WumpusObject.WUMPUS) {
-            hitted = true;
-            worldMap[locRow - 1][locCol] = WumpusObject.EMPTY;
-
-        } else if (direction == LookDirection.EAST
-                && worldMap[locRow][locCol + 1] == WumpusObject.WUMPUS) {
-            hitted = true;
-            worldMap[locRow][locCol + 1] = WumpusObject.EMPTY;
-        }
+        shooted = true;
         return true;
     }
-    public void Climb(State state) {
+    public void Climb() {
         System.out.println("탈출 성공!!!");
     }
 }

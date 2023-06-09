@@ -8,4 +8,5 @@ public enum NextAction {
     SHOOT,
     CLIMB,
     RESTART,
+    GAMEOVER,
 }

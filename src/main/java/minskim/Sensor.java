@@ -56,10 +56,29 @@ public class Sensor {
         return false;
     }
 
-    public boolean checkShot(Agent agent, State state) {
-        if (agent.isHitted()) {
-            agent.setHitted(false);
-            state.setScream(true);
+    public boolean checkShot(Agent agent, WumpusObject[][] worldMap, State state) {
+        int row = agent.getLocRow();
+        int col = agent.getLocCol();
+
+        if (agent.isShooted()) {
+            if (agent.getDirection() == LookDirection.NORTH
+                    && worldMap[row + 1][col] == WumpusObject.WUMPUS) {
+                worldMap[row - 1][col] = WumpusObject.EMPTY;
+                state.setScream(true);
+            } else if (agent.getDirection() == LookDirection.WEST
+                    && worldMap[row][col - 1] == WumpusObject.WUMPUS) {
+                worldMap[row][col - 1] = WumpusObject.EMPTY;
+                state.setScream(true);
+            } else if (agent.getDirection() == LookDirection.SOUTH
+                    && worldMap[row - 1][col] == WumpusObject.WUMPUS) {
+                worldMap[row - 1][col] = WumpusObject.EMPTY;
+                state.setScream(true);
+            } else if (agent.getDirection() == LookDirection.EAST
+                    && worldMap[row][col + 1] == WumpusObject.WUMPUS) {
+                worldMap[row][col + 1] = WumpusObject.EMPTY;
+                state.setScream(true);
+            }
+            agent.setShooted(false);
             return true;
         }
         return false;
@@ -79,7 +98,7 @@ public class Sensor {
         checkGold(agent, worldMap, state);
         checkWumpus(agent, worldMap, state);
         checkPitch(agent, worldMap, state);
-        checkShot(agent, state);
+        checkShot(agent, worldMap, state);
 
         return  state;
     }
