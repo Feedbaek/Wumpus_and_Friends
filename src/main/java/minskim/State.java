@@ -46,4 +46,9 @@ public final class State {
     public void setScream(boolean scream) {
         Scream = scream;
     }
+
+    @Override
+    public String toString() {
+        return "Stench Breeze Scream Bump Glitter\n" + isStench() + " " + isBreeze() + " " + isScream() + " " + isBump() + " " + isGlitter();
+    }
 }

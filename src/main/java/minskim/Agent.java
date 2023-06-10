@@ -26,7 +26,7 @@ public class Agent {
         arrow = 2;
         shooted = false;
         haveGold = false;
-        targetCell = new int[2];
+        targetCell = new int[] {0, 0};
         nextCell = new ArrayList<>();
         nextActions = new LinkedList<>();
         direction = LookDirection.EAST;

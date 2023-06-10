@@ -20,6 +20,7 @@ public class Sensor {
     public boolean checkWumpus(Agent agent, WumpusObject[][] worldMap, State state) {
         if (worldMap[agent.getLocRow()][agent.getLocCol()] == WumpusObject.WUMPUS) {
             agent.setAlive(false);
+            System.out.println("[Sensor] WUMPUS");
             state.setStench(true);
             return true;
         }
@@ -36,6 +37,7 @@ public class Sensor {
     public boolean checkPitch(Agent agent, WumpusObject[][] worldMap, State state) {
         if (worldMap[agent.getLocRow()][agent.getLocCol()] == WumpusObject.PITCH) {
             agent.setAlive(false);
+            System.out.println("[Sensor] PITCH");
             state.setStench(true);
             return true;
         }
@@ -94,8 +96,12 @@ public class Sensor {
     public State percept(Agent agent, WumpusObject[][] worldMap) {
         State state = new State();
 
-        checkWall(agent, worldMap, state);
-        checkGold(agent, worldMap, state);
+        if (checkWall(agent, worldMap, state)) {
+            return state;
+        }
+        if (checkGold(agent, worldMap, state)) {
+            return state;
+        }
         checkWumpus(agent, worldMap, state);
         checkPitch(agent, worldMap, state);
         checkShot(agent, worldMap, state);
