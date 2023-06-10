@@ -79,24 +79,21 @@ Map extends JFrame {
 
 
         /*--Data Init--*/
-        data = new Object[4][4];
-        for(int i=0;i<4;i++){
-            for(int j=0;j<4;j++){
-                data[i][j]=State.UNKNOWN;
+        data = new Object[6][6];
+        for(int i=0;i<6;i++){
+            for(int j=0;j<6;j++){
+                if(i==0 || j==0 || i==5 || j==5) data[i][j]=State.WALL;
+                else data[i][j]=State.UNKNOWN;
             }
         }
-        data[0][0]=State.SAFE;
-        data[0][1]=agent[LEFT];
 
         /*--Discovered Init--*/
-        discovered = new boolean[4][4];
-        for(int i=0;i<4;i++){
-            for(int j=0;j<4;j++){
+        discovered = new boolean[6][6];
+        for(int i=0;i<6;i++){
+            for(int j=0;j<6;j++){
                 discovered[i][j]=false;
             }
         }
-        discovered[0][0]=true;
-        discovered[0][1]=true;
 
         /*--# of Arrows--*/
         numOfArrows=2;
@@ -104,18 +101,17 @@ Map extends JFrame {
 
         /*--Table(Grid) View Init--*/
         // tableMap model Init
-        columnVector = new Object[4];
-        for(int i=0;i<4;i++) columnVector[i]=i;
+        columnVector = new Object[6];
+        for(int i=0;i<6;i++) columnVector[i]=i;
         model = new DefaultTableModel(data,columnVector){
             public Class getColumnClass(int c) {
-                if(c==3) stack++;
-                if(stack==4) stack=0;
+                if(c==5) stack++;
+                if(stack==6) stack=0;
                 if(c==0) cur_row=stack;
                 if(!discovered[cur_row][c]) return String.class;
                 return getValueAt(cur_row,c).getClass();
             }
         };
-        model.setValueAt(State.SAFE,0,0);
         // tableMap render Init
         render = new MyTableCellRender();
         try {
@@ -128,18 +124,21 @@ Map extends JFrame {
 
         /*--mapTable data in & Table cell edit--*/
         mapTable.setModel(model);   //add model(table inside)
-        mapTable.setRowHeight(200);
+        mapTable.setRowHeight(125);
+        int cellWidth = 125;
+        mapTable.getColumnModel().getColumn(0).setMaxWidth(cellWidth);
+        mapTable.getColumnModel().getColumn(1).setMaxWidth(cellWidth);
+        mapTable.getColumnModel().getColumn(2).setMaxWidth(cellWidth);
+        mapTable.getColumnModel().getColumn(3).setMaxWidth(cellWidth);
+        mapTable.getColumnModel().getColumn(4).setMaxWidth(cellWidth);
+        mapTable.getColumnModel().getColumn(5).setMaxWidth(cellWidth);
         mapTable.setCellSelectionEnabled(false);
         mapTable.setDragEnabled(false);
 
         /*--Percepts Table Edit--*/
         // current Percepts data
         curPercepts = new Object[3][2];
-        //debug
-        curPercepts[0][0]=breeze;
-        curPercepts[0][1]=stench;
-        curPercepts[1][0]=glitter;
-        //debug-end
+        clear2DimensionArray(curPercepts);
 
         // perceptsTable Model
         perceptsCol = new Object[2];
@@ -180,19 +179,25 @@ Map extends JFrame {
 
     //=========Interface========================
 
-    public void setSafe(int row,int column){
-        discovered[row][column]=true;
-        data[row][column]=State.SAFE;
+    public void drawSafe(int row, int column){
+        int newRow=5-row;
+        discovered[newRow][column]=true;
+        data[newRow][column]=State.SAFE;
         model.setDataVector(data,columnVector);
     }
 
-    public void setState(State state,int row, int column){
-        data[row][column] = stateConvertToIcon(state);
+    public void drawState(State state, int row, int column){
+        int newRow=5-row;
+        data[newRow][column] = stateConvertToIcon(state);
         model.setDataVector(data,columnVector);
     }
+    public void clearCellState(int row,int column){
+        int newRow=5-row;
+        data[newRow][column]="empty";
+    }
 
-    public void setCurPercepts(Vector<State> states){
-        curPercepts = clear2DimensionArray(curPercepts);
+    public void drawPercepts(Vector<State> states){
+        clear2DimensionArray(curPercepts);
         int size = states.size();
         int col=0,row=0;
         for(State state : states){
@@ -210,8 +215,14 @@ Map extends JFrame {
         perceptsModel.setDataVector(curPercepts,perceptsCol);
     }
 
+    public void clearPercepts(){
+        clear2DimensionArray(curPercepts);
+        perceptsModel.setDataVector(curPercepts,perceptsCol);
+    }
+
     public void setDiscovered(int row, int column){
-        discovered[row][column]=true;
+        int newRow=5-row;
+        discovered[newRow][column]=true;
     }
 
     public void useArrow(){
@@ -239,9 +250,13 @@ Map extends JFrame {
     private Object stateConvertToIcon(State state){
         if(state.equals(State.WUMPUS)) return wumpus;
         else if(state.equals(State.PITCH)) return pitch;
+        else if(state.equals(State.GLITTER)) return glitter;
         else if(state.equals(State.STENCH)) return stench;
         else if(state.equals(State.BREEZE)) return breeze;
-        else if(state.equals(State.GLITTER)) return glitter;
+        else if(state.equals(State.AGENT_UP)) return agent[UP];
+        else if(state.equals(State.AGENT_DOWN)) return agent[DOWN];
+        else if(state.equals(State.AGENT_LEFT)) return agent[LEFT];
+        else if(state.equals(State.AGENT_RIGHT)) return agent[RIGHT];
         else return state;
     }
     //=========Util-end==========================
@@ -258,6 +273,10 @@ Map extends JFrame {
                  if (data[row][column].equals(State.SAFE) && discovered[row][column]){
                      cell.setBackground(new Color(143, 255, 78, 183));
                      cell.setForeground(new Color(143, 255, 78, 183));
+                 }
+                 else if(data[row][column].equals(State.WALL)){
+                     cell.setBackground(new Color(70, 70, 70, 255));
+                     cell.setForeground(new Color(70, 70, 70, 255));
                  }
                  else {
                      cell.setBackground(new Color(0, 0, 0, 255));
