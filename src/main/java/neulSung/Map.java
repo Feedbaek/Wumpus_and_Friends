@@ -1,5 +1,9 @@
 package neulSung;
 
+import minskim.Agent;
+import minskim.KnowledgeBase;
+import minskim.enums.LookDirection;
+import minskim.enums.WumpusObject;
 import neulSung.Enum.State;
 
 import javax.swing.*;
@@ -31,10 +35,11 @@ Map extends JFrame {
     private Object[][] curPercepts;
     private Object[] perceptsCol;
 
-    private boolean[][] discovered;
+    //private boolean[][] discovered;
 
     // Images
     private Icon wumpus;
+    private Icon scream;
     private Icon pitch;
     private Icon stench;
     private Icon breeze;
@@ -43,6 +48,7 @@ Map extends JFrame {
 
     static final private String WUMPUS_LOC = "src/main/java/neulSung/Icons/Wumpus_temp.png";
     static final private String PITCH_LOC = "src/main/java/neulSung/Icons/Pitch_temp.png";
+    static final private String SCREAM_LOC = "src/main/java/neulSung/Icons/Scream_temp.png";
     static final private String STENCH_LOC = "src/main/java/neulSung/Icons/Stench_temp.png";
     static final private String BREEZE_LOC = "src/main/java/neulSung/Icons/Breeze_temp.png";
     static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Gold(Glittering)_temp.png";
@@ -66,6 +72,7 @@ Map extends JFrame {
         /*--Image Load--*/
         wumpus = new ImageIcon(WUMPUS_LOC);
         pitch = new ImageIcon(PITCH_LOC);
+        scream = new ImageIcon(SCREAM_LOC);
         stench = new ImageIcon(STENCH_LOC);
         breeze = new ImageIcon(BREEZE_LOC);
         glitter = new ImageIcon(GLITTER_LOC);
@@ -88,12 +95,12 @@ Map extends JFrame {
         }
 
         /*--Discovered Init--*/
-        discovered = new boolean[6][6];
+        /*discovered = new boolean[6][6];
         for(int i=0;i<6;i++){
             for(int j=0;j<6;j++){
                 discovered[i][j]=false;
             }
-        }
+        }*/
 
         /*--# of Arrows--*/
         numOfArrows=2;
@@ -108,7 +115,7 @@ Map extends JFrame {
                 if(c==5) stack++;
                 if(stack==6) stack=0;
                 if(c==0) cur_row=stack;
-                if(!discovered[cur_row][c]) return String.class;
+                //if(!discovered[cur_row][c]) return String.class;
                 return getValueAt(cur_row,c).getClass();
             }
         };
@@ -181,7 +188,7 @@ Map extends JFrame {
 
     public void drawSafe(int row, int column){
         int newRow=5-row;
-        discovered[newRow][column]=true;
+        //discovered[newRow][column]=true;
         data[newRow][column]=State.SAFE;
         model.setDataVector(data,columnVector);
     }
@@ -220,10 +227,10 @@ Map extends JFrame {
         perceptsModel.setDataVector(curPercepts,perceptsCol);
     }
 
-    public void setDiscovered(int row, int column){
+    /*public void setDiscovered(int row, int column){
         int newRow=5-row;
         discovered[newRow][column]=true;
-    }
+    }*/
 
     public void useArrow(){
         if(numOfArrows<=0)
@@ -231,6 +238,35 @@ Map extends JFrame {
         else
             numOfArrows--;
         arrowsLabel.setText(String.valueOf(numOfArrows));
+    }
+
+    public void drawWumpusWorld(WumpusObject[][] wumpusObjects, KnowledgeBase knowledgeBase, Agent agent){
+        Object[][] newMap = new Object[6][6];
+        Vector<State> newPercepts = new Vector<>();
+        boolean[][] visited = knowledgeBase.getVisited();
+        int agentRow = 5 - agent.getLocRow();
+        int agentColumn = agent.getLocCol();
+        clear2DimensionArray(newMap);
+        for(int row=0;row<6;row++){
+            for(int column=0;column<6;column++) {
+                if(wumpusObjects[row][column].equals(WumpusObject.WUMPUS)) newMap[5-row][column] = stateConvertToIcon(State.WUMPUS);
+                else if(wumpusObjects[row][column].equals(WumpusObject.PITCH)) newMap[5-row][column] = stateConvertToIcon(State.PITCH);
+                else if(wumpusObjects[row][column].equals(WumpusObject.WALL)) newMap[5-row][column] = stateConvertToIcon(State.WALL);
+                else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) newMap[5-row][column] = stateConvertToIcon(State.GLITTER);
+            }
+        }
+        if(agent.getDirection().equals(LookDirection.EAST)) newMap[agentRow][agentColumn] = State.AGENT_RIGHT;
+        else if(agent.getDirection().equals(LookDirection.WEST)) newMap[agentRow][agentColumn] = State.AGENT_LEFT;
+        else if(agent.getDirection().equals(LookDirection.NORTH)) newMap[agentRow][agentColumn] = State.AGENT_UP;
+        else if(agent.getDirection().equals(LookDirection.SOUTH)) newMap[agentRow][agentColumn] = State.AGENT_DOWN;
+
+        if(knowledgeBase.getStateMap()[agentRow][agentColumn].isStench()) newPercepts.add(State.STENCH);
+        if(knowledgeBase.getStateMap()[agentRow][agentColumn].isBreeze()) newPercepts.add(State.BREEZE);
+        if(knowledgeBase.getStateMap()[agentRow][agentColumn].isGlitter()) newPercepts.add(State.GLITTER);
+        if(knowledgeBase.getStateMap()[agentRow][agentColumn].isScream()) newPercepts.add(State.SCREAM);
+
+        model.setDataVector(newMap,columnVector);
+        drawPercepts(newPercepts);
     }
     //=========Interface-end=====================
 
@@ -253,11 +289,20 @@ Map extends JFrame {
         else if(state.equals(State.GLITTER)) return glitter;
         else if(state.equals(State.STENCH)) return stench;
         else if(state.equals(State.BREEZE)) return breeze;
+        else if(state.equals(State.SCREAM)) return scream;
         else if(state.equals(State.AGENT_UP)) return agent[UP];
         else if(state.equals(State.AGENT_DOWN)) return agent[DOWN];
         else if(state.equals(State.AGENT_LEFT)) return agent[LEFT];
         else if(state.equals(State.AGENT_RIGHT)) return agent[RIGHT];
         else return state;
+    }
+
+    private State ConvertToState(WumpusObject wumpusObject){
+        if(wumpusObject.equals(WumpusObject.WUMPUS)) return State.WUMPUS;
+        if(wumpusObject.equals(WumpusObject.PITCH)) return State.PITCH;
+        if(wumpusObject.equals(WumpusObject.WALL)) return State.WALL;
+        if(wumpusObject.equals(WumpusObject.GOLD)) return State.GLITTER;
+        return State.UNKNOWN;
     }
     //=========Util-end==========================
 
@@ -270,7 +315,7 @@ Map extends JFrame {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             try {
-                 if (data[row][column].equals(State.SAFE) && discovered[row][column]){
+                 if (data[row][column].equals(State.SAFE) /*&& discovered[row][column]*/){
                      cell.setBackground(new Color(143, 255, 78, 183));
                      cell.setForeground(new Color(143, 255, 78, 183));
                  }

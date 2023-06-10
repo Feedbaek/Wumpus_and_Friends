@@ -9,7 +9,7 @@ public class Main {
         Map map = new Map();
         map.drawSafe(1,1);
         map.drawState(State.AGENT_RIGHT,1,2);
-        map.setDiscovered(1,2);
+        //map.setDiscovered(1,2);
         /*Vector<State> states = new Vector<>();
         states.add(State.BREEZE);
         states.add(State.STENCH);
