@@ -244,7 +244,7 @@ Map extends JFrame {
         Object[][] newMap = new Object[6][6];
         Vector<State> newPercepts = new Vector<>();
         boolean[][] visited = knowledgeBase.getVisited();
-        int agentRow = 5 - agent.getLocRow();
+        int agentRow = agent.getLocRow();
         int agentColumn = agent.getLocCol();
         clear2DimensionArray(newMap);
         for(int row=0;row<6;row++){
@@ -255,16 +255,17 @@ Map extends JFrame {
                 else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) newMap[5-row][column] = stateConvertToIcon(State.GLITTER);
             }
         }
-        if(agent.getDirection().equals(LookDirection.EAST)) newMap[agentRow][agentColumn] = State.AGENT_RIGHT;
-        else if(agent.getDirection().equals(LookDirection.WEST)) newMap[agentRow][agentColumn] = State.AGENT_LEFT;
-        else if(agent.getDirection().equals(LookDirection.NORTH)) newMap[agentRow][agentColumn] = State.AGENT_UP;
-        else if(agent.getDirection().equals(LookDirection.SOUTH)) newMap[agentRow][agentColumn] = State.AGENT_DOWN;
+        if(agent.getDirection().equals(LookDirection.EAST)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_RIGHT);
+        else if(agent.getDirection().equals(LookDirection.WEST)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_LEFT);
+        else if(agent.getDirection().equals(LookDirection.NORTH)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_UP);
+        else if(agent.getDirection().equals(LookDirection.SOUTH)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_DOWN);
 
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isStench()) newPercepts.add(State.STENCH);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isBreeze()) newPercepts.add(State.BREEZE);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isGlitter()) newPercepts.add(State.GLITTER);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isScream()) newPercepts.add(State.SCREAM);
 
+        arrowsLabel.setText(String.valueOf(agent.getArrow()));
         model.setDataVector(newMap,columnVector);
         drawPercepts(newPercepts);
     }
