@@ -103,8 +103,10 @@ public class WumpusWorld {
         stopGame = false;
         Scanner sc = new Scanner(System.in);
         System.out.println("play!!!");
+        map.drawWumpusWorld(worldMap, kb, agent);
         while (!stopGame) {
-            kb.printMap(worldMap, agent);
+            System.out.println("++++++++ start ++++++++");
+//            kb.printMap(worldMap, agent);
 //            String input = sc.next();
 //            if (input.equals("0")) {
 //                kb.printMap(worldMap, agent);
@@ -126,10 +128,12 @@ public class WumpusWorld {
                 System.out.println("에이전트가 사망하였습니다 ㅜㅜ");
                 System.out.println("row: " + agent.getLocRow() + " col: " + agent.getLocCol());
                 kb.printMap(worldMap, agent);
+                return false;
             } else {
                 System.out.println("Action: " + nextAction);
             }
             map.drawWumpusWorld(worldMap, kb, agent);
+            System.out.println("========= end =========\n");
         }
         if (endGame) {
             return true;
