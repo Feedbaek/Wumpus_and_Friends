@@ -75,8 +75,8 @@ public class WumpusWorld {
         return state;
     }
 
-    private NextAction Reasoning(Agent agent, KnowledgeBase kb, State state) {
-        NextAction nextAction = kb.Reasoning(agent, state, worldMap);
+    private NextAction Reasoning(Agent agent, KnowledgeBase kb, State state, Map map) {
+        NextAction nextAction = kb.Reasoning(agent, state, worldMap, map);
         return nextAction;
     }
 
@@ -105,28 +105,14 @@ public class WumpusWorld {
         stopGame = false;
         Scanner sc = new Scanner(System.in);
         System.out.println("play!!!");
-        map.drawWumpusWorld(worldMap, kb, agent);
+//        map.drawWumpusWorld(worldMap, kb, agent);
         while (!stopGame) {
             System.out.println("++++++++ start ++++++++");
-//            kb.printMap(worldMap, agent);
-//            String input = sc.next();
-//            if (input.equals("0")) {
-//                kb.printMap(worldMap, agent);
-//                System.out.println("강제종료");
-//                System.exit(0);
-//            }
-            map.setWaiting();
-            while (map.isWaiting()) {
-                if(map.getResetTrigger()) {
-                    return true;
-                }
-                sleep(10);
-            }
 
             /* 상태를 인식함 */
             state = Percept(agent);
             /* 현재 kb를 기반으로 추론을 해서 다음 행동을 결정함 */
-            nextAction = Reasoning(agent, kb, state);
+            nextAction = Reasoning(agent, kb, state, map);
             /* 결정된 행동을 실행하고, 상태를 kb에 저장함 */
             Action(agent, nextAction);
             if (nextAction == RESTART) {
@@ -137,7 +123,15 @@ public class WumpusWorld {
             } else {
                 System.out.println("Action: " + nextAction);
             }
-            map.drawWumpusWorld(worldMap, kb, agent);
+
+            map.setWaiting();
+            while (map.isWaiting()) {
+                if(map.getResetTrigger()) {
+                    return true;
+                }
+                sleep(10);
+            }
+//            map.drawWumpusWorld(worldMap, kb, agent);
             System.out.println("========= end =========\n");
         }
         if (endGame) {

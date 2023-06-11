@@ -4,6 +4,7 @@ import minskim.enums.LookDirection;
 import minskim.enums.NextAction;
 import minskim.enums.Possible;
 import minskim.enums.WumpusObject;
+import neulSung.Map;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -593,9 +594,10 @@ public class KnowledgeBase {
         return ret;
     }
 
-    public NextAction Reasoning(Agent agent, State state, WumpusObject[][] worldMap) {
+    public NextAction Reasoning(Agent agent, State state, WumpusObject[][] worldMap, Map map) {
         tell(agent, state, worldMap); // Percept 이후
         NextAction nextAction = ask(agent, state);  // Reasoning
+        map.drawWumpusWorld(worldMap, this, agent);
         tell(agent, nextAction, worldMap);  // Action 이전
         return nextAction;
     }
