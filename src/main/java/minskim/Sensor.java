@@ -80,7 +80,7 @@ public class Sensor {
                 worldMap[row][col + 1] = WumpusObject.EMPTY;
                 state.setScream(true);
             }
-            agent.setShooted(false);
+//            agent.setShooted(false);
             return true;
         }
         return false;
