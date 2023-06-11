@@ -38,7 +38,7 @@ Map extends JFrame {
     private Object[][] curPercepts;
     private Object[] perceptsCol;
 
-    //private boolean[][] discovered;
+    private boolean[][] discovered;
 
     // Images
     private Icon wumpus;
@@ -90,8 +90,6 @@ Map extends JFrame {
         agent[LEFT]=new ImageIcon(AGENT_LEFT_LOC);
         agent[DOWN]=new ImageIcon(AGENT_DOWN_LOC);
 
-
-
         /*--Data Init--*/
         data = new Object[6][6];
         for(int i=0;i<6;i++){
@@ -100,14 +98,6 @@ Map extends JFrame {
                 else data[i][j]=State.UNKNOWN;
             }
         }
-
-        /*--Discovered Init--*/
-        /*discovered = new boolean[6][6];
-        for(int i=0;i<6;i++){
-            for(int j=0;j<6;j++){
-                discovered[i][j]=false;
-            }
-        }*/
 
         /*--# of Arrows--*/
         numOfArrows=2;
@@ -198,6 +188,15 @@ Map extends JFrame {
                 waiting=false;
             }
         });
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btn = (JButton) e.getSource();
+                System.out.println("Reset BTN Clicked");
+                System.out.println("prev reset : "+reset);
+                reset = true;
+            }
+        });
     }
 
     //=========Interface========================
@@ -257,24 +256,31 @@ Map extends JFrame {
     }
 
     public void drawWumpusWorld(WumpusObject[][] wumpusObjects, KnowledgeBase knowledgeBase, Agent agent){
-        Object[][] newMap = new Object[6][6];
-        Vector<State> newPercepts = new Vector<>();
-        boolean[][] visited = knowledgeBase.getVisited();
-        int agentRow = agent.getLocRow();
-        int agentColumn = agent.getLocCol();
-        clear2DimensionArray(newMap);
-        for(int row=0;row<6;row++){
-            for(int column=0;column<6;column++) {
-                if(wumpusObjects[row][column].equals(WumpusObject.WUMPUS)) newMap[5-row][column] = stateConvertToIcon(State.WUMPUS);
-                else if(wumpusObjects[row][column].equals(WumpusObject.PITCH)) newMap[5-row][column] = stateConvertToIcon(State.PITCH);
-                else if(wumpusObjects[row][column].equals(WumpusObject.WALL)) newMap[5-row][column] = stateConvertToIcon(State.WALL);
-                else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) newMap[5-row][column] = stateConvertToIcon(State.GLITTER);
+        //Object[][] newMap = new Object[6][6];
+        for(int i=0;i<6;i++){
+            for(int j=0;j<6;j++){
+                if(i==0 || j==0 || i==5 || j==5) data[i][j]=State.WALL;
+                else data[i][j]=State.UNKNOWN;
             }
         }
-        if(agent.getDirection().equals(LookDirection.EAST)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_RIGHT);
-        else if(agent.getDirection().equals(LookDirection.WEST)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_LEFT);
-        else if(agent.getDirection().equals(LookDirection.NORTH)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_UP);
-        else if(agent.getDirection().equals(LookDirection.SOUTH)) newMap[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_DOWN);
+        Vector<State> newPercepts = new Vector<>();
+        discovered = knowledgeBase.getVisited();
+        int agentRow = agent.getLocRow();
+        int agentColumn = agent.getLocCol();
+        //clear2DimensionArray(data);
+        for(int row=0;row<6;row++){
+            for(int column=0;column<6;column++) {
+                if(discovered[row][column]) data[5-row][column] = stateConvertToIcon(State.SAFE);
+                if(wumpusObjects[row][column].equals(WumpusObject.WUMPUS)) data[5-row][column] = stateConvertToIcon(State.WUMPUS);
+                else if(wumpusObjects[row][column].equals(WumpusObject.PITCH)) data[5-row][column] = stateConvertToIcon(State.PITCH);
+                else if(wumpusObjects[row][column].equals(WumpusObject.WALL)) data[5-row][column] = stateConvertToIcon(State.WALL);
+                else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) data[5-row][column] = stateConvertToIcon(State.GLITTER);
+            }
+        }
+        if(agent.getDirection().equals(LookDirection.EAST)) data[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_RIGHT);
+        else if(agent.getDirection().equals(LookDirection.WEST)) data[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_LEFT);
+        else if(agent.getDirection().equals(LookDirection.NORTH)) data[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_UP);
+        else if(agent.getDirection().equals(LookDirection.SOUTH)) data[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_DOWN);
 
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isStench()) newPercepts.add(State.STENCH);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isBreeze()) newPercepts.add(State.BREEZE);
@@ -282,15 +288,19 @@ Map extends JFrame {
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isScream()) newPercepts.add(State.SCREAM);
 
         arrowsLabel.setText(String.valueOf(agent.getArrow()));
-        model.setDataVector(newMap,columnVector);
+        model.setDataVector(data,columnVector);
         drawPercepts(newPercepts);
     }
 
     public boolean isWaiting(){
         return waiting;
     }
+    public boolean getResetTrigger(){
+        return reset;
+    }
 
     public void setWaiting(){ this.waiting=true; }
+    public void setResetFalse(){ this.reset=false; }
 
     //=========Interface-end=====================
 
@@ -339,7 +349,7 @@ Map extends JFrame {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             try {
-                 if (data[row][column].equals(State.SAFE) /*&& discovered[row][column]*/){
+                 if (data[row][column].equals(State.SAFE)){
                      cell.setBackground(new Color(143, 255, 78, 183));
                      cell.setForeground(new Color(143, 255, 78, 183));
                  }

@@ -17,6 +17,7 @@ public class WumpusWorld {
     private Sensor sensor = null;
     private boolean endGame = false;
     private boolean stopGame = false;
+    private Map map;
 
     public static final int MAP_ROW = 6;
     public static final int MAP_COL = 6;
@@ -26,6 +27,7 @@ public class WumpusWorld {
         sensor = new Sensor();
         endGame = false;
         stopGame = false;
+        map = new Map();
     }
 
     // method
@@ -115,6 +117,9 @@ public class WumpusWorld {
 //            }
             map.setWaiting();
             while (map.isWaiting()) {
+                if(map.getResetTrigger()) {
+                    return true;
+                }
                 sleep(10);
             }
 
@@ -143,15 +148,28 @@ public class WumpusWorld {
 
     public void startLoop() throws InterruptedException {
         KnowledgeBase kb = new KnowledgeBase();
-        Map map = new Map();
         /* 게임 계속 실행 */
         while (true) {
+            if(map.getResetTrigger()) {
+                map.setResetFalse();
+                kb = new KnowledgeBase();
+                mapInit();
+                sensor = new Sensor();
+            }
             /* 새로운 에이전트 */
             Agent agent = new Agent();
-            if (play(agent, kb, map)) {
-                break;
-            };
+            play(agent, kb, map);
+            while(endGame){
+                if(map.getResetTrigger()) {
+                    mapInit();
+                    endGame = false;
+                    stopGame = false;
+                    break;
+                }
+                sleep(10);
+            }
         }
-        System.out.println("Game Over!!!");
+        //System.out.println("Game Over!!!");
+
     }
 }
