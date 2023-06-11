@@ -149,40 +149,24 @@ public class KnowledgeBase {
             if (state.isScream()) {
                 if (agent.getDirection() == NORTH) {
                     myMap[row + 1][col] = EMPTY;
-//                    visited[row + 2][col] = false;
-//                    visited[row][col] = false;
-//                    visited[row + 1][col + 1] = false;
-//                    visited[row + 1][col + 2] = false;
                     canWumpus[row + 1][col] = NEVER;
                     if (!visited[row + 1][col]) {
                         emptyCell.add(new int[] {row + 1, col});
                     }
                 } else if (agent.getDirection() == WEST) {
                     myMap[row][col - 1] = EMPTY;
-//                    visited[row+1][col-1] = false;
-//                    visited[row-1][col-1] = false;
-//                    visited[row][col] = false;
-//                    visited[row][col - 2] = false;
                     canWumpus[row][col - 1] = NEVER;
                     if (!visited[row][col - 1]) {
                         emptyCell.add(new int[]{row, col - 1});
                     }
                 } else if (agent.getDirection() == SOUTH) {
                     myMap[row - 1][col] = EMPTY;
-//                    visited[row][col] = false;
-//                    visited[row - 2][col] = false;
-//                    visited[row - 1][col - 1] = false;
-//                    visited[row - 1][col + 1] = false;
                     canWumpus[row - 1][col] = NEVER;
                     if (!visited[row - 1][col]) {
                         emptyCell.add(new int[]{row - 1, col});
                     }
                 } else if (agent.getDirection() == EAST) {
                     myMap[row][col + 1] = EMPTY;
-//                    visited[row+1][col+1] = false;
-//                    visited[row-1][col+1] = false;
-//                    visited[row][col + 2] = false;
-//                    visited[row][col] = false;
                     canWumpus[row][col + 1] = NEVER;
                     if (!visited[row][col + 1]) {
                         emptyCell.add(new int[]{row, col + 1});
@@ -318,15 +302,6 @@ public class KnowledgeBase {
         } else if (nextAction == TURNRIGHT) {
             agent.TurnRight();
         } else if (nextAction == SHOOT) {
-            if (agent.getDirection() == NORTH && worldMap[row + 1][col] == WUMPUS) {
-                worldMap[row + 1][col] = EMPTY;
-            } else if (agent.getDirection() == WEST && worldMap[row][col - 1] == WUMPUS)  {
-                worldMap[row][col - 1] = EMPTY;
-            } else if (agent.getDirection() == SOUTH && worldMap[row + 1][col] == WUMPUS) {
-                worldMap[row + 1][col] = EMPTY;
-            } else if (agent.getDirection() == EAST && worldMap[row][col + 1] == WUMPUS) {
-                worldMap[row][col + 1] = EMPTY;
-            }
             agent.Shoot();
         } else if (nextAction == GRAB) {
             agent.Grab();
