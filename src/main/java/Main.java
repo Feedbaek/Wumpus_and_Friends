@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Scanner sc = new Scanner(System.in);
         WumpusWorld wumpusWorld = new WumpusWorld();
         Agent agent;

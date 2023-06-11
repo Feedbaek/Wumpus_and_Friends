@@ -54,13 +54,13 @@ public class KnowledgeBase {
     }
 
     private void checkDanger(Possible[][] map, int r, int c, Possible val, Possible cmp) {
-        if (map[r + 1][c] == cmp)
+        if (map[r + 1][c] == cmp && !visited[r + 1][c])
             map[r + 1][c] = val;
-        if (map[r - 1][c] == cmp)
+        if (map[r - 1][c] == cmp && !visited[r - 1][c])
             map[r - 1][c] = val;
-        if (map[r][c + 1] == cmp)
+        if (map[r][c + 1] == cmp && !visited[r][c + 1])
             map[r][c + 1] = val;
-        if (map[r][c - 1] == cmp)
+        if (map[r][c - 1] == cmp && !visited[r][c - 1])
             map[r][c - 1] = val;
     }
 
@@ -178,6 +178,7 @@ public class KnowledgeBase {
                     canWumpus[row][col + 1] = NEVER;
                 }
             }
+            agent.setShooted(false);
         }
         if (state.isGlitter()) {
             myMap[row][col] = GOLD;
@@ -349,8 +350,8 @@ public class KnowledgeBase {
     private void dfs(Agent agent, int r, int c) {
         if (dfsVisited == null) {
             dfsVisited = new boolean[MAP_ROW][MAP_COL];
-            for (int i=1; i<MAP_ROW; ++i) {
-                for (int j=1; j<MAP_COL; ++j) {
+            for (int i=1; i<MAP_ROW-1; ++i) {
+                for (int j=1; j<MAP_COL-1; ++j) {
                     dfsVisited[i][j] = false;
                 }
             }
@@ -476,14 +477,22 @@ public class KnowledgeBase {
     private NextAction findDirection(Agent agent) {
         System.out.println("[KB] findDirection start");
         if (agent.getNextActions().isEmpty()) {
-            if (agent.getTargetCell()[0] == 0 || agent.getTargetCell()[1] == 0) {
+            if (agent.getTargetCell()[0] == -1 || agent.getTargetCell()[1] == -1) {
                 return GAMEOVER;
             }
-            dfsVisited = null;
+            System.out.println();
             System.out.println("[KB] dfs start");
+            dfsVisited = null;
             dfs(agent, agent.getLocRow(), agent.getLocCol());
             System.out.println("r: " + agent.getTargetCell()[0] + " c: " + agent.getTargetCell()[1]);
+            System.out.println("next actions: ");
+            NextAction arr[] = agent.getNextActions().toArray(new NextAction[0]);
+            for (int i=0; i<agent.getNextActions().size(); ++i) {
+                System.out.print(arr[i] + " ");
+            }
+            System.out.println();
             System.out.println("[KB] dfs end");
+            System.out.println();
         }
         System.out.println("[KB] findDirection poll");
         return agent.getNextActions().poll();

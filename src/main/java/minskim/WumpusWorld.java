@@ -7,6 +7,7 @@ import neulSung.Map;
 import java.util.Random;
 import java.util.Scanner;
 
+import static java.lang.Thread.sleep;
 import static minskim.enums.NextAction.*;
 import static minskim.enums.WumpusObject.*;
 
@@ -96,7 +97,7 @@ public class WumpusWorld {
         }
     }
 
-    public boolean play(Agent agent, KnowledgeBase kb, Map map) {
+    public boolean play(Agent agent, KnowledgeBase kb, Map map) throws InterruptedException {
         State state;
         NextAction nextAction;
         stopGame = false;
@@ -104,11 +105,15 @@ public class WumpusWorld {
         System.out.println("play!!!");
         while (!stopGame) {
             kb.printMap(worldMap, agent);
-            String input = sc.next();
-            if (input.equals("0")) {
-                kb.printMap(worldMap, agent);
-                System.out.println("강제종료");
-                System.exit(0);
+//            String input = sc.next();
+//            if (input.equals("0")) {
+//                kb.printMap(worldMap, agent);
+//                System.out.println("강제종료");
+//                System.exit(0);
+//            }
+            map.setWaiting();
+            while (map.isWaiting()) {
+                sleep(10);
             }
 
             /* 상태를 인식함 */
@@ -132,7 +137,7 @@ public class WumpusWorld {
         return false;
     }
 
-    public void startLoop() {
+    public void startLoop() throws InterruptedException {
         KnowledgeBase kb = new KnowledgeBase();
         Map map = new Map();
         /* 게임 계속 실행 */
