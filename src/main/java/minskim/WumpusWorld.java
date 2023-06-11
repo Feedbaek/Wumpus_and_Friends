@@ -58,11 +58,11 @@ public class WumpusWorld {
                 if (i == 1 && j == 1) {
                     continue;
                 }
-                if (random.nextInt(10) == 0) {
+                if (random.nextInt(10000) < 1000) {
                     worldMap[i][j] = WUMPUS;
                     continue;
                 }
-                if (random.nextInt(10) == 0) {
+                if (random.nextInt(10000) < 1000) {
                     worldMap[i][j] = PITCH;
                 }
             }
