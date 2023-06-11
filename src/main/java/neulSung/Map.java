@@ -10,6 +10,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLOutput;
 import java.util.Vector;
 
 public class
@@ -67,6 +70,10 @@ Map extends JFrame {
     int stack=0;
     int stack2=0;
     int numOfArrows;
+
+    boolean waiting=true;
+
+    boolean reset=false;
 
     public Map(){
         /*--Image Load--*/
@@ -182,6 +189,15 @@ Map extends JFrame {
         pack();
         setVisible(true);
         setResizable(false);
+
+        /*--proceed button action listener--*/
+        proceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btn = (JButton) e.getSource();
+                waiting=false;
+            }
+        });
     }
 
     //=========Interface========================
@@ -269,6 +285,13 @@ Map extends JFrame {
         model.setDataVector(newMap,columnVector);
         drawPercepts(newPercepts);
     }
+
+    public boolean isWaiting(){
+        return waiting;
+    }
+
+    public void setWaiting(){ this.waiting=true; }
+
     //=========Interface-end=====================
 
 
