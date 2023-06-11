@@ -99,9 +99,7 @@ public class Sensor {
         if (checkWall(agent, worldMap, state)) {
             return state;
         }
-        if (checkGold(agent, worldMap, state)) {
-            return state;
-        }
+        checkGold(agent, worldMap, state);
         checkWumpus(agent, worldMap, state);
         checkPitch(agent, worldMap, state);
         checkShot(agent, worldMap, state);
