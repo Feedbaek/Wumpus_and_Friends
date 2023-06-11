@@ -46,13 +46,6 @@ public class WumpusWorld {
             }
         }
 
-        int r = 0, c = 0;
-        do {
-            r = random.nextInt(MAP_ROW);
-            c = random.nextInt(MAP_COL);
-        } while (r == 0 || c == 0 || r == MAP_ROW-1 || c == MAP_COL-1 || (r == 1 && c == 1));
-        worldMap[r][c] = WumpusObject.GOLD;
-
         for (int i=1; i<MAP_ROW-1; ++i) {
             for (int j=1; j<MAP_COL-1; ++j) {
                 if (i == 1 && j == 1) {
@@ -67,6 +60,13 @@ public class WumpusWorld {
                 }
             }
         }
+
+        int r = 0, c = 0;
+        do {
+            r = random.nextInt(MAP_ROW);
+            c = random.nextInt(MAP_COL);
+        } while (r == 0 || c == 0 || r == MAP_ROW-1 || c == MAP_COL-1 || (r == 1 && c == 1));
+        worldMap[r][c] = WumpusObject.GOLD;
     }
 
     private State Percept(Agent agent) {

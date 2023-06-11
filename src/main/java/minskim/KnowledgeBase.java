@@ -112,6 +112,8 @@ public class KnowledgeBase {
                 myMap[row][col] = WumpusObject.PITCH;
             }
             System.out.println("꽥!!!");
+            stateMap[row][col] = state;
+            return;
         }
         if (state.isBreeze()) {
             if (agent.isAlive())
@@ -322,11 +324,11 @@ public class KnowledgeBase {
         else { /* 없는데 */
             /* 이동 할 안전한 셀이 있으면 */
             while (!emptyCell.isEmpty() && visited[emptyCell.peek()[0]][emptyCell.peek()[1]]) {
-                emptyCell.remove();
+                emptyCell.poll();
             }
             if (!emptyCell.isEmpty()) {
                 agent.setTargetCell(emptyCell.peek());
-                emptyCell.remove();
+                emptyCell.poll();
                 nextAction = findDirection(agent);
             } else {
                 /* 위험 지역을 목표로 설정 */
@@ -379,17 +381,16 @@ public class KnowledgeBase {
     private void dfs(Agent agent, int r, int c, LookDirection direction) {
         if (dfsVisited == null) {
             dfsVisited = new boolean[MAP_ROW][MAP_COL];
-            for (int i=1; i<MAP_ROW-1; ++i) {
-                for (int j=1; j<MAP_COL-1; ++j) {
+            for (int i=0; i<MAP_ROW; ++i) {
+                for (int j=0; j<MAP_COL; ++j) {
                     dfsVisited[i][j] = false;
                 }
             }
+            dfsVisited[r][c] = true;
             dfsStack = new Stack<>();
             minSize = 100;
         }
 
-
-//        dfsVisited[r][c] = true;
         if (r == agent.getTargetCell()[0] && c == agent.getTargetCell()[1] && dfsStack.size() < minSize) {
             System.out.println("[dfs] action: ");
             NextAction arr[] = dfsStack.toArray(new NextAction[0]);
@@ -403,6 +404,7 @@ public class KnowledgeBase {
         }
 
         if (r <= 0 || c <= 0 || r >= 5 || c >= 5) {
+            System.out.println("[DFS] error!!!!");
             return;
         }
 
@@ -512,7 +514,8 @@ public class KnowledgeBase {
     private void setNextCell(Agent agent) {
         for (int r=1; r<MAP_ROW-1; ++r) {
             for (int c=1; c<MAP_COL-1; ++c) {
-                if (myMap[r][c] != PITCH && !visited[r][c] && (canWumpus[r][c] == POSSIBLE || canPitch[r][c] == POSSIBLE || myMap[r][c] == WumpusObject.IDK)) {
+                if (myMap[r][c] != PITCH && !visited[r][c] && (canWumpus[r][c] == POSSIBLE || canPitch[r][c] == POSSIBLE || (myMap[r][c] == WumpusObject.IDK
+                        && (visited[r-1][c] || visited[r+1][c] || visited[r][c+1] || visited[r][c-1])))) {
                     agent.setTargetCell(new int[] {r, c});
                     System.out.println("[KB] targetCell: " + r + ", " + c);
                     return;
@@ -539,9 +542,9 @@ public class KnowledgeBase {
             }
             System.out.println("\n[KB] dfs end\n");
         }
-        System.out.println("[KB] findDirection remove()");
+        System.out.println("[KB] findDirection poll()");
         NextAction ret = agent.getNextActions().peek();
-        agent.getNextActions().remove();
+        agent.getNextActions().poll();
         return ret;
     }
 
