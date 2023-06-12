@@ -6,6 +6,7 @@ public enum State {
     STENCH,
     BREEZE,
     GLITTER,
+    GOLD,
     BUMP,
     SCREAM,
     WUMPUS,

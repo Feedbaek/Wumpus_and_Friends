@@ -35,7 +35,7 @@
             </constraints>
             <properties>
               <enabled value="false"/>
-              <fillsViewportHeight value="false"/>
+              <fillsViewportHeight value="true"/>
               <focusable value="false"/>
               <requestFocusEnabled value="false"/>
               <rowSelectionAllowed value="false"/>

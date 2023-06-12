@@ -12,9 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLOutput;
 import java.util.Vector;
-
 public class
 Map extends JFrame {
     /*--SWING COMPONENTS--*/
@@ -44,17 +42,21 @@ Map extends JFrame {
     private Icon wumpus;
     private Icon scream;
     private Icon pitch;
+    private Icon gold;
     private Icon stench;
     private Icon breeze;
     private Icon glitter;
-    private Icon[] agent;
+    private Icon bump;
+    private ImageIcon[] agent;
 
     static final private String WUMPUS_LOC = "src/main/java/neulSung/Icons/Wumpus_temp.png";
     static final private String PITCH_LOC = "src/main/java/neulSung/Icons/Pitch_temp.png";
+    static final private String GOLD_LOC = "src/main/java/neulSung/Icons/Gold.png";
     static final private String SCREAM_LOC = "src/main/java/neulSung/Icons/Scream_temp.png";
     static final private String STENCH_LOC = "src/main/java/neulSung/Icons/Stench_temp.png";
     static final private String BREEZE_LOC = "src/main/java/neulSung/Icons/Breeze_temp.png";
-    static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Gold(Glittering)_temp.png";
+    static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Glitter.png";
+    static final private String BUMP_LOC = "src/main/java/neulSung/Icons/bump.png";
     static final private String AGENT_UP_LOC = "src/main/java/neulSung/Icons/Agents/Agent_up.png";
     static final private String AGENT_DOWN_LOC = "src/main/java/neulSung/Icons/Agents/Agent_down.png";
     static final private String AGENT_RIGHT_LOC = "src/main/java/neulSung/Icons/Agents/Agent_right.png";
@@ -75,52 +77,59 @@ Map extends JFrame {
 
     boolean reset=false;
 
-    public Map(){
+    public Map() {
         /*--Image Load--*/
         wumpus = new ImageIcon(WUMPUS_LOC);
         pitch = new ImageIcon(PITCH_LOC);
+        gold = new ImageIcon(GOLD_LOC);
         scream = new ImageIcon(SCREAM_LOC);
         stench = new ImageIcon(STENCH_LOC);
         breeze = new ImageIcon(BREEZE_LOC);
         glitter = new ImageIcon(GLITTER_LOC);
+        bump = new ImageIcon(BUMP_LOC);
         //agent
         agent = new ImageIcon[4];
-        agent[UP]=new ImageIcon(AGENT_UP_LOC);
+        agent[UP] = new ImageIcon(AGENT_UP_LOC);
         agent[RIGHT]=new ImageIcon(AGENT_RIGHT_LOC);
         agent[LEFT]=new ImageIcon(AGENT_LEFT_LOC);
         agent[DOWN]=new ImageIcon(AGENT_DOWN_LOC);
 
+
         /*--Data Init--*/
         data = new Object[6][6];
-        for(int i=0;i<6;i++){
-            for(int j=0;j<6;j++){
-                if(i==0 || j==0 || i==5 || j==5) data[i][j]=State.WALL;
-                else data[i][j]=State.UNKNOWN;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (i == 0 || j == 0 || i == 5 || j == 5) data[i][j] = State.WALL;
+                else data[i][j] = State.UNKNOWN;
             }
         }
 
         /*--# of Arrows--*/
-        numOfArrows=2;
+        numOfArrows = 2;
         arrowsLabel.setText(String.valueOf(numOfArrows));
 
         /*--Table(Grid) View Init--*/
         // tableMap model Init
         columnVector = new Object[6];
-        for(int i=0;i<6;i++) columnVector[i]=i;
-        model = new DefaultTableModel(data,columnVector){
+        for (int i = 0; i < 6; i++) columnVector[i] = i;
+        model = new DefaultTableModel(data, columnVector) {
             public Class getColumnClass(int c) {
-                if(c==5) stack++;
-                if(stack==6) stack=0;
-                if(c==0) cur_row=stack;
+                if (c == 5) stack++;
+                if (stack == 6) stack = 0;
+                if (c == 0) cur_row = stack;
                 //if(!discovered[cur_row][c]) return String.class;
-                return getValueAt(cur_row,c).getClass();
+                if(getValueAt(cur_row,c).equals(agent[UP])||
+                        getValueAt(cur_row,c).equals(agent[DOWN])||
+                        getValueAt(cur_row,c).equals(agent[LEFT])||
+                        getValueAt(cur_row,c).equals(agent[RIGHT])) return String.class;
+                return getValueAt(cur_row, c).getClass();
             }
         };
         // tableMap render Init
         render = new MyTableCellRender();
         try {
             mapTable.setDefaultRenderer(Class.forName("java.lang.Object"), render);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         render.setHorizontalAlignment(JLabel.CENTER);
@@ -146,29 +155,34 @@ Map extends JFrame {
 
         // perceptsTable Model
         perceptsCol = new Object[2];
-        perceptsCol[0] = 0; perceptsCol[1] = 1;
-        perceptsModel = new DefaultTableModel(perceptsCol,2){
+        perceptsCol[0] = 0;
+        perceptsCol[1] = 1;
+        perceptsModel = new DefaultTableModel(perceptsCol, 2) {
             @Override
-            public Class getColumnClass(int c){
-                if(c==1) stack2++;
-                if(stack2==3) stack2=0;
-                if(c==0) cur_row2=stack2;
-                return getValueAt(cur_row2,c).getClass();
+            public Class getColumnClass(int c) {
+                if (c == 1) stack2++;
+                if (stack2 == 3) stack2 = 0;
+                if (c == 0) cur_row2 = stack2;
+                return getValueAt(cur_row2, c).getClass();
             }
         };
-        perceptsModel.setDataVector(curPercepts,perceptsCol);
+        perceptsModel.setDataVector(curPercepts, perceptsCol);
         // perceptsTable Renderer
-        perceptsRender = new DefaultTableCellRenderer(){
+        perceptsRender = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                cell.setForeground(new Color(255,255,255));
+                cell.setForeground(new Color(255, 255, 255));
                 return cell;
             }
         };
         // Percepts Table
         perceptsTable.setModel(perceptsModel);
-        try{perceptsTable.setDefaultRenderer(Class.forName("java.lang.Object"),perceptsRender);}catch(Exception e){e.printStackTrace();}
+        try {
+            perceptsTable.setDefaultRenderer(Class.forName("java.lang.Object"), perceptsRender);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         perceptsTable.setRowHeight(200);
 
 
@@ -185,7 +199,7 @@ Map extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton btn = (JButton) e.getSource();
-                waiting=false;
+                waiting = false;
             }
         });
         resetButton.addActionListener(new ActionListener() {
@@ -193,7 +207,7 @@ Map extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 JButton btn = (JButton) e.getSource();
                 System.out.println("Reset BTN Clicked");
-                System.out.println("prev reset : "+reset);
+                System.out.println("prev reset : " + reset);
                 reset = true;
             }
         });
@@ -274,7 +288,7 @@ Map extends JFrame {
                 if(wumpusObjects[row][column].equals(WumpusObject.WUMPUS)) data[5-row][column] = stateConvertToIcon(State.WUMPUS);
                 else if(wumpusObjects[row][column].equals(WumpusObject.PITCH)) data[5-row][column] = stateConvertToIcon(State.PITCH);
                 else if(wumpusObjects[row][column].equals(WumpusObject.WALL)) data[5-row][column] = stateConvertToIcon(State.WALL);
-                else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) data[5-row][column] = stateConvertToIcon(State.GLITTER);
+                else if(wumpusObjects[row][column].equals(WumpusObject.GOLD)) data[5-row][column] = stateConvertToIcon(State.GOLD);
             }
         }
         if(agent.getDirection().equals(LookDirection.EAST)) data[5-agentRow][agentColumn] = stateConvertToIcon(State.AGENT_RIGHT);
@@ -286,6 +300,7 @@ Map extends JFrame {
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isBreeze()) newPercepts.add(State.BREEZE);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isGlitter()) newPercepts.add(State.GLITTER);
         if(knowledgeBase.getStateMap()[agentRow][agentColumn].isScream()) newPercepts.add(State.SCREAM);
+        if(knowledgeBase.getStateMap()[agentRow][agentColumn].isBump()) newPercepts.add(State.BUMP);
 
         arrowsLabel.setText(String.valueOf(agent.getArrow()));
         model.setDataVector(data,columnVector);
@@ -320,10 +335,12 @@ Map extends JFrame {
     private Object stateConvertToIcon(State state){
         if(state.equals(State.WUMPUS)) return wumpus;
         else if(state.equals(State.PITCH)) return pitch;
+        else if(state.equals(State.GOLD)) return gold;
         else if(state.equals(State.GLITTER)) return glitter;
         else if(state.equals(State.STENCH)) return stench;
         else if(state.equals(State.BREEZE)) return breeze;
         else if(state.equals(State.SCREAM)) return scream;
+        else if(state.equals(State.BUMP)) return bump;
         else if(state.equals(State.AGENT_UP)) return agent[UP];
         else if(state.equals(State.AGENT_DOWN)) return agent[DOWN];
         else if(state.equals(State.AGENT_LEFT)) return agent[LEFT];
@@ -338,6 +355,29 @@ Map extends JFrame {
         if(wumpusObject.equals(WumpusObject.GOLD)) return State.GLITTER;
         return State.UNKNOWN;
     }
+
+    private void print2DimensionBooleanArray(boolean[][] array){
+        System.out.println();
+        System.out.println("BOOLEAN ARRAY");
+        for(int i = 0; i < array.length; i++ ){
+            for(int j = 0; j<array[i].length; j++){
+                System.out.print(array[5-i][j]+" | ");
+            }
+            System.out.println();
+            System.out.println("----------------------------------");
+        }
+    }
+    private void print2DimensionArray(Object[][] array){
+        System.out.println();
+        System.out.println("OBJECT ARRAY");
+        for(int i = 0; i < array.length; i++ ){
+            for(int j = 0; j<array[i].length; j++){
+                System.out.print(array[i][j].toString()+" | ");
+            }
+            System.out.println();
+            System.out.println("----------------------------------");
+        }
+    }
     //=========Util-end==========================
 
     class MyTableCellRender extends DefaultTableCellRenderer{
@@ -345,27 +385,42 @@ Map extends JFrame {
 
 
         private static final long serialVersionUID = 1L;
+
+        int cur_row=0;
+        int cur_col=0;
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            try {
-                 if (data[row][column].equals(State.SAFE)){
-                     cell.setBackground(new Color(143, 255, 78, 183));
-                     cell.setForeground(new Color(143, 255, 78, 183));
-                 }
-                 else if(data[row][column].equals(State.WALL)){
-                     cell.setBackground(new Color(70, 70, 70, 255));
-                     cell.setForeground(new Color(70, 70, 70, 255));
-                 }
-                 else {
-                     cell.setBackground(new Color(0, 0, 0, 255));
-                     cell.setForeground(new Color(0, 0, 0, 255));
-                 }
-            }catch(Exception e){
-                System.out.println(cell.getName());
-                //System.out.println(++debug);
+            this.cur_col=column;
+            this.cur_row=row;
+            cell.setBackground(new Color(0, 0, 0, 255));
+            cell.setForeground(new Color(0, 0, 0, 255));
+            if (data[row][column].equals(State.SAFE) || discovered[5-row][column]){
+                if(row==0||row==5||column==0||column==5){
+                    cell.setBackground(new Color(70, 70, 70, 255));
+                    cell.setForeground(new Color(70, 70, 70, 255));
+                }
+                else{
+                    cell.setBackground(new Color(143, 255, 78, 183));
+                    cell.setForeground(new Color(143, 255, 78, 183));
+                }
             }
+            if(data[row][column].equals(State.WALL) ){
+                 cell.setBackground(new Color(70, 70, 70, 255));
+                 cell.setForeground(new Color(70, 70, 70, 255));
+             }
             return cell;
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            Graphics2D g2d = (Graphics2D)g;
+            g.fillRect(0, 0, 150, 140);
+            if(data[this.cur_row][this.cur_col]==agent[Map.UP]) g2d.drawImage(agent[Map.UP].getImage(), 0, 0, null);
+            if(data[this.cur_row][this.cur_col]==agent[Map.DOWN]) g2d.drawImage(agent[Map.DOWN].getImage(), 0, 0, null);
+            if(data[this.cur_row][this.cur_col]==agent[Map.LEFT]) g2d.drawImage(agent[Map.LEFT].getImage(), 0, 0, null);
+            if(data[this.cur_row][this.cur_col]==agent[Map.RIGHT]) g2d.drawImage(agent[Map.RIGHT].getImage(), 0, 0, null);
         }
     }
 
