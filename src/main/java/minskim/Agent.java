@@ -14,7 +14,6 @@ public class Agent {
     private boolean shooted = false;
     private boolean haveGold = false;
     private int[] targetCell = null;
-    private ArrayList<int[]> nextCell = null;
     private Queue<NextAction> nextActions = null;
     private LookDirection direction = LookDirection.EAST;
     private LookDirection prevDirection = LookDirection.EAST;
@@ -27,7 +26,6 @@ public class Agent {
         shooted = false;
         haveGold = false;
         targetCell = new int[] {0, 0};
-        nextCell = new ArrayList<>();
         nextActions = new LinkedList<>();
         direction = LookDirection.EAST;
         prevDirection = LookDirection.EAST;
@@ -71,9 +69,6 @@ public class Agent {
         this.targetCell = targetCell;
     }
 
-    public ArrayList<int[]> getNextCell() {
-        return nextCell;
-    }
 
     public Queue<NextAction> getNextActions() {
         return nextActions;

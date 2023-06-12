@@ -28,6 +28,9 @@ public class KnowledgeBase {
     private Possible canWumpus[][] = null;
     private Possible canPitch[][] = null;
 
+    private boolean[][] dfsVisited = null;
+    private int minSize = 0;
+
     public boolean[][] getVisited() {
         return visited;
     }
@@ -56,17 +59,6 @@ public class KnowledgeBase {
         return stateMap;
     }
 
-    private void checkDanger(Possible[][] map, int r, int c, Possible val, Possible cmp) {
-        if (map[r + 1][c] == cmp && !visited[r + 1][c])
-            map[r + 1][c] = val;
-        if (map[r - 1][c] == cmp && !visited[r - 1][c])
-            map[r - 1][c] = val;
-        if (map[r][c + 1] == cmp && !visited[r][c + 1])
-            map[r][c + 1] = val;
-        if (map[r][c - 1] == cmp && !visited[r][c - 1])
-            map[r][c - 1] = val;
-    }
-
     public void printMap(Object[][] map, Agent agent) {
         System.out.println("++++++++++++++++++");
         for (int i=MAP_ROW-1; i>=0; --i) {
@@ -88,6 +80,44 @@ public class KnowledgeBase {
             System.out.println();
         }
         System.out.println("==================");
+    }
+
+    private void checkDanger(Possible[][] map, int r, int c, Possible val, Possible cmp) {
+        if (map[r + 1][c] == cmp && !visited[r + 1][c])
+            map[r + 1][c] = val;
+        if (map[r - 1][c] == cmp && !visited[r - 1][c])
+            map[r - 1][c] = val;
+        if (map[r][c + 1] == cmp && !visited[r][c + 1])
+            map[r][c + 1] = val;
+        if (map[r][c - 1] == cmp && !visited[r][c - 1])
+            map[r][c - 1] = val;
+    }
+
+    private void inference(Possible[][] canMap, int row, int col, WumpusObject val) {
+        if (canMap[row+1][col] == POSSIBLE &&
+                canMap[row-1][col] == Possible.NEVER &&
+                canMap[row][col+1] == Possible.NEVER &&
+                canMap[row][col-1] == Possible.NEVER) {
+            myMap[row+1][col] = val;
+        }
+        if (canMap[row-1][col] == POSSIBLE &&
+                canMap[row+1][col] == Possible.NEVER &&
+                canMap[row][col+1] == Possible.NEVER &&
+                canMap[row][col-1] == Possible.NEVER) {
+            myMap[row-1][col] = val;
+        }
+        if (canMap[row][col+1] == POSSIBLE &&
+                canMap[row+1][col] == Possible.NEVER &&
+                canMap[row-1][col] == Possible.NEVER &&
+                canMap[row][col-1] == Possible.NEVER) {
+            myMap[row][col+1] = val;
+        }
+        if (canMap[row][col-1] == POSSIBLE &&
+                canMap[row+1][col] == Possible.NEVER &&
+                canMap[row-1][col] == Possible.NEVER &&
+                canMap[row][col+1] == Possible.NEVER) {
+            myMap[row][col-1] = val;
+        }
     }
 
     private void tell(Agent agent, State state, WumpusObject[][] worldMap) {
@@ -264,33 +294,6 @@ public class KnowledgeBase {
         stateMap[row][col] = state;
     }
 
-    private void inference(Possible[][] canMap, int row, int col, WumpusObject val) {
-        if (canMap[row+1][col] == POSSIBLE &&
-                canMap[row-1][col] == Possible.NEVER &&
-                canMap[row][col+1] == Possible.NEVER &&
-                canMap[row][col-1] == Possible.NEVER) {
-            myMap[row+1][col] = val;
-        }
-        if (canMap[row-1][col] == POSSIBLE &&
-                canMap[row+1][col] == Possible.NEVER &&
-                canMap[row][col+1] == Possible.NEVER &&
-                canMap[row][col-1] == Possible.NEVER) {
-            myMap[row-1][col] = val;
-        }
-        if (canMap[row][col+1] == POSSIBLE &&
-                canMap[row+1][col] == Possible.NEVER &&
-                canMap[row-1][col] == Possible.NEVER &&
-                canMap[row][col-1] == Possible.NEVER) {
-            myMap[row][col+1] = val;
-        }
-        if (canMap[row][col-1] == POSSIBLE &&
-                canMap[row+1][col] == Possible.NEVER &&
-                canMap[row-1][col] == Possible.NEVER &&
-                canMap[row][col+1] == Possible.NEVER) {
-            myMap[row][col-1] = val;
-        }
-    }
-
     private void tell(Agent agent, NextAction nextAction, WumpusObject[][] worldMap) {
         int row = agent.getLocRow();
         int col = agent.getLocCol();
@@ -398,8 +401,6 @@ public class KnowledgeBase {
         return nextAction;
     }
 
-    private boolean[][] dfsVisited = null;
-    private int minSize = 0;
     private void dfs(Agent agent, int r, int c, LookDirection direction) {
         if (dfsVisited == null) {
             dfsVisited = new boolean[MAP_ROW][MAP_COL];
@@ -534,8 +535,8 @@ public class KnowledgeBase {
     }
 
     private void setNextCell(Agent agent) {
-        for (int r=1; r<MAP_ROW-1; ++r) {
-            for (int c=1; c<MAP_COL-1; ++c) {
+        for (int r=0; r<MAP_ROW; ++r) {
+            for (int c=0; c<MAP_COL; ++c) {
                 if (myMap[r][c] != PITCH && !visited[r][c] && (canWumpus[r][c] == POSSIBLE || canPitch[r][c] == POSSIBLE)) {
                     agent.setTargetCell(new int[] {r, c});
                     System.out.println("[KB] targetCell: " + r + ", " + c);
