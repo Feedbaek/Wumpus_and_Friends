@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.Vector;
 public class
 Map extends JFrame {
@@ -79,7 +80,9 @@ Map extends JFrame {
 
     public Map() {
         /*--Image Load--*/
-        wumpus = new ImageIcon(WUMPUS_LOC);
+        //wumpus = new ImageIcon(WUMPUS_LOC);
+        URL url = this.getClass().getClassLoader().getResource("Wumpus_temp.png");
+        wumpus = new ImageIcon(url);
         pitch = new ImageIcon(PITCH_LOC);
         gold = new ImageIcon(GOLD_LOC);
         scream = new ImageIcon(SCREAM_LOC);
