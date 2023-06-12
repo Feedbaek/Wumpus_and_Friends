@@ -40,14 +40,14 @@ Map extends JFrame {
     private boolean[][] discovered;
 
     // Images
-    private Icon wumpus;
-    private Icon scream;
-    private Icon pitch;
-    private Icon gold;
-    private Icon stench;
-    private Icon breeze;
-    private Icon glitter;
-    private Icon bump;
+    private ImageIcon wumpus;
+    private ImageIcon scream;
+    private ImageIcon pitch;
+    private ImageIcon gold;
+    private ImageIcon stench;
+    private ImageIcon breeze;
+    private ImageIcon glitter;
+    private ImageIcon bump;
     private ImageIcon[] agent;
 
     static final private String WUMPUS_LOC = "Icons/Wumpus_temp.png";
