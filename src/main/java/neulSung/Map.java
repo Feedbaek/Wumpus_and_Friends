@@ -50,18 +50,18 @@ Map extends JFrame {
     private Icon bump;
     private ImageIcon[] agent;
 
-    static final private String WUMPUS_LOC = "src/main/java/neulSung/Icons/Wumpus_temp.png";
-    static final private String PITCH_LOC = "src/main/java/neulSung/Icons/Pitch_temp.png";
-    static final private String GOLD_LOC = "src/main/java/neulSung/Icons/Gold.png";
-    static final private String SCREAM_LOC = "src/main/java/neulSung/Icons/Scream_temp.png";
-    static final private String STENCH_LOC = "src/main/java/neulSung/Icons/Stench_temp.png";
-    static final private String BREEZE_LOC = "src/main/java/neulSung/Icons/Breeze_temp.png";
-    static final private String GLITTER_LOC = "src/main/java/neulSung/Icons/Glitter.png";
-    static final private String BUMP_LOC = "src/main/java/neulSung/Icons/bump.png";
-    static final private String AGENT_UP_LOC = "src/main/java/neulSung/Icons/Agents/Agent_up.png";
-    static final private String AGENT_DOWN_LOC = "src/main/java/neulSung/Icons/Agents/Agent_down.png";
-    static final private String AGENT_RIGHT_LOC = "src/main/java/neulSung/Icons/Agents/Agent_right.png";
-    static final private String AGENT_LEFT_LOC = "src/main/java/neulSung/Icons/Agents/Agent_left.png";
+    static final private String WUMPUS_LOC = "Icons/Wumpus_temp.png";
+    static final private String PITCH_LOC = "Icons/Pitch_temp.png";
+    static final private String GOLD_LOC = "Icons/Gold.png";
+    static final private String SCREAM_LOC = "Icons/Scream_temp.png";
+    static final private String STENCH_LOC = "Icons/Stench_temp.png";
+    static final private String BREEZE_LOC = "Icons/Breeze_temp.png";
+    static final private String GLITTER_LOC = "Icons/Glitter.png";
+    static final private String BUMP_LOC = "Icons/bump.png";
+    static final private String AGENT_UP_LOC = "Icons/Agents/Agent_up.png";
+    static final private String AGENT_DOWN_LOC = "Icons/Agents/Agent_down.png";
+    static final private String AGENT_RIGHT_LOC = "Icons/Agents/Agent_right.png";
+    static final private String AGENT_LEFT_LOC = "Icons/Agents/Agent_left.png";
 
     static final private int UP = 0;
     static final private int DOWN = 1;
@@ -79,23 +79,21 @@ Map extends JFrame {
     boolean reset=false;
 
     public Map() {
-        /*--Image Load--*/
-        //wumpus = new ImageIcon(WUMPUS_LOC);
-        URL url = this.getClass().getClassLoader().getResource("Wumpus_temp.png");
-        wumpus = new ImageIcon(url);
-        pitch = new ImageIcon(PITCH_LOC);
-        gold = new ImageIcon(GOLD_LOC);
-        scream = new ImageIcon(SCREAM_LOC);
-        stench = new ImageIcon(STENCH_LOC);
-        breeze = new ImageIcon(BREEZE_LOC);
-        glitter = new ImageIcon(GLITTER_LOC);
-        bump = new ImageIcon(BUMP_LOC);
+        /*--Image Load--*/;
+        wumpus = new ImageIcon(getClass().getClassLoader().getResource(WUMPUS_LOC));
+        pitch = new ImageIcon(getClass().getClassLoader().getResource(PITCH_LOC));
+        gold = new ImageIcon(getClass().getClassLoader().getResource(GOLD_LOC));
+        scream = new ImageIcon(getClass().getClassLoader().getResource(SCREAM_LOC));
+        stench = new ImageIcon(getClass().getClassLoader().getResource(STENCH_LOC));
+        breeze = new ImageIcon(getClass().getClassLoader().getResource(BREEZE_LOC));
+        glitter = new ImageIcon(getClass().getClassLoader().getResource(GLITTER_LOC));
+        bump = new ImageIcon(getClass().getClassLoader().getResource(BUMP_LOC));
         //agent
         agent = new ImageIcon[4];
-        agent[UP] = new ImageIcon(AGENT_UP_LOC);
-        agent[RIGHT]=new ImageIcon(AGENT_RIGHT_LOC);
-        agent[LEFT]=new ImageIcon(AGENT_LEFT_LOC);
-        agent[DOWN]=new ImageIcon(AGENT_DOWN_LOC);
+        agent[UP] = new ImageIcon(getClass().getClassLoader().getResource(AGENT_UP_LOC));
+        agent[RIGHT]=new ImageIcon(getClass().getClassLoader().getResource(AGENT_RIGHT_LOC));
+        agent[LEFT]=new ImageIcon(getClass().getClassLoader().getResource(AGENT_LEFT_LOC));
+        agent[DOWN]=new ImageIcon(getClass().getClassLoader().getResource(AGENT_DOWN_LOC));
 
 
         /*--Data Init--*/
