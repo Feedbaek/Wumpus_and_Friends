@@ -130,6 +130,15 @@ public class KnowledgeBase {
             stateMap[row][col] = state;
             canWumpus[row][col] = NEVER;
             canPitch[row][col] = NEVER;
+            if (agent.getDirection() == NORTH) {
+                stateMap[row - 1][col].setBump(true);
+            } else if (agent.getDirection() == WEST) {
+                stateMap[row][col + 1].setBump(true);
+            } else if (agent.getDirection() == SOUTH) {
+                stateMap[row + 1][col].setBump(true);
+            } else if (agent.getDirection() == EAST) {
+                stateMap[row][col - 1].setBump(true);
+            }
             return;
         }
         /* 살아있는 경우 */
@@ -325,14 +334,25 @@ public class KnowledgeBase {
         }
         /* 벽에 부딪쳤는가 */
         if (state.isBump()) {
+            /*
             if (Math.abs(agent.getDirection().compareTo(agent.getPrevDirection())) == 2) {
                 nextAction = GOFORWARD;
-                /* 벽에 충돌하면 목표 초기화 */
+                *//* 벽에 충돌하면 목표 초기화 *//*
                 agent.setTargetCell(new int[] {0, 0});
             } else {
                 nextAction = TURNLEFT;
             }
             return nextAction;
+            */
+            if (agent.getDirection() == NORTH) {
+                agent.setLocRow(row - 1);
+            } else if (agent.getDirection() == WEST) {
+                agent.setLocCol(col + 1);
+            } else if (agent.getDirection() == SOUTH) {
+                agent.setLocRow(row + 1);
+            } else if (agent.getDirection() == EAST) {
+                agent.setLocCol(col - 1);
+            }
         }
 
         /* 화살을 쏠 것인지, 움직일 건지 생각해야함 */
