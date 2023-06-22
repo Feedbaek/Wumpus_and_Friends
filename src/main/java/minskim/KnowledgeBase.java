@@ -334,16 +334,6 @@ public class KnowledgeBase {
         }
         /* 벽에 부딪쳤는가 */
         if (state.isBump()) {
-            /*
-            if (Math.abs(agent.getDirection().compareTo(agent.getPrevDirection())) == 2) {
-                nextAction = GOFORWARD;
-                *//* 벽에 충돌하면 목표 초기화 *//*
-                agent.setTargetCell(new int[] {0, 0});
-            } else {
-                nextAction = TURNLEFT;
-            }
-            return nextAction;
-            */
             if (agent.getDirection() == NORTH) {
                 agent.setLocRow(row - 1);
             } else if (agent.getDirection() == WEST) {
@@ -447,7 +437,6 @@ public class KnowledgeBase {
         }
 
         if (r <= 0 || c <= 0 || r >= 5 || c >= 5) {
-            System.out.println("[DFS] error!!!!");
             return;
         }
 

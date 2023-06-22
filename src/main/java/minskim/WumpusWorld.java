@@ -59,11 +59,10 @@ public class WumpusWorld {
                     continue;
                 }
                 if (random.nextInt(10000) < 1000) {
-                    worldMap[i][j] = WUMPUS;
-                    continue;
+                    worldMap[i][j] = PITCH;
                 }
                 if (random.nextInt(10000) < 1000) {
-                    worldMap[i][j] = PITCH;
+                    worldMap[i][j] = WUMPUS;
                 }
             }
         }
